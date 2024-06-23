@@ -1,28 +1,32 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>ビットコイン 価格</h1>
+    <ul>
+      <li v-for="currency in info" :key="currency.code">
+        {{ currency.code }} : {{ currency.rate_float | currencydecimal }}
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import axios from "axios";
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  data() {
+    return {
+      info: null,
+    };
+  },
+  async mounted() {
+    const response = await axios.get(
+      "https://api.coindesk.com/v1/bpi/currentprice.json"
+    );
+    this.info = response.data.bpi;
+  },
+  filters: {
+    currencydecimal(value) {
+      return value.toFixed(2);
+    },
+  },
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
